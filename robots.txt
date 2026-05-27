@@ -1,0 +1,31 @@
+# Ride Out — Legal Pages
+# Diese Seiten sind nur über App-interne Links erreichbar.
+# Suchmaschinen und Archive sollen die Seiten nicht indexieren
+# oder archivieren.
+
+User-agent: *
+Disallow: /
+
+User-agent: ia_archiver
+Disallow: /
+
+User-agent: archive.org_bot
+Disallow: /
+
+User-agent: Wayback
+Disallow: /
+
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ChatGPT-User
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: PerplexityBot
+Disallow: /
+
+User-agent: ClaudeBot
+Disallow: /
