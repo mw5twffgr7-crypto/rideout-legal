@@ -130,7 +130,7 @@ footer {
       <h1>E-Mail bestätigt</h1>
       <p>Dein Account ist jetzt aktiv. Du kannst dich in der App anmelden und loslegen.</p>
 
-      <a href="rideout://" class="cta" id="openApp">Ride Out öffnen</a>
+      <a href="rideout://confirmed" class="cta" id="openApp">Ride Out öffnen</a>
     </div>
   </main>
 
@@ -142,7 +142,7 @@ footer {
     // dann öffnet sich die App automatisch via Custom URL Scheme.
     // Falls der Browser den Auto-Redirect blockiert, bleibt der Button als Backup.
     (function () {
-      var target = "rideout://";
+      var target = "rideout://confirmed";
       var delayMs = 1500;
       setTimeout(function () {
         window.location.href = target;
