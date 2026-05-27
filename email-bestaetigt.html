@@ -102,21 +102,7 @@
       transform: translateY(-1px);
       box-shadow: 0 12px 32px var(--accent-glow);
     }
-    .hint {
-      margin-top: 20px;
-      font-size: 12px;
-      color: var(--muted);
-      line-height: 1.6;
-    }
-    .hint code {
-      background: rgba(255, 255, 255, 0.06);
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-      font-size: 11px;
-      color: var(--text);
-    }
-    footer {
+footer {
       padding: 20px 24px;
       text-align: center;
       font-size: 12px;
@@ -144,16 +130,24 @@
       <h1>E-Mail bestätigt</h1>
       <p>Dein Account ist jetzt aktiv. Du kannst dich in der App anmelden und loslegen.</p>
 
-      <a href="rideout://" class="cta">Zur Ride Out App</a>
-
-      <p class="hint">
-        Wenn der Button nicht funktioniert, öffne die Ride&nbsp;Out App manuell auf deinem Gerät und melde dich mit deiner E-Mail an.
-      </p>
+      <a href="rideout://" class="cta" id="openApp">Ride Out öffnen</a>
     </div>
   </main>
 
   <footer>
     <a href="datenschutz.html">Datenschutz</a>·<a href="impressum.html">Impressum</a>
   </footer>
+  <script>
+    // Auto-Redirect zur App nach 1.5s — User sieht kurz die Erfolgs-Meldung,
+    // dann öffnet sich die App automatisch via Custom URL Scheme.
+    // Falls der Browser den Auto-Redirect blockiert, bleibt der Button als Backup.
+    (function () {
+      var target = "rideout://";
+      var delayMs = 1500;
+      setTimeout(function () {
+        window.location.href = target;
+      }, delayMs);
+    })();
+  </script>
 </body>
 </html>
