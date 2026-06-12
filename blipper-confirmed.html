@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<!--
+  Blipper — Bestätigungs-/Site-URL-Seite.
+  Die Signup-Bestätigung leitet primär per Deep-Link (rideout://confirmed) in die App
+  (Auto-Login). Diese Seite ist die Blipper-gebrandete FALLBACK-Seite (Desktop / wenn der
+  Deep-Link nicht automatisch öffnet). In Supabase → Authentication → URL Configuration als
+  Site URL setzen (rideout://confirmed bleibt in den Redirect URLs).
+-->
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="robots" content="noindex" />
+  <title>Blipper — E-Mail bestätigt</title>
+  <style>
+    :root{ --bg:#080A0D; --card:#0E1116; --border:#262C34; --accent:#FF5E1A;
+           --ink:#140800; --text:#EAF0F6; --text2:#8893A1; --text3:#4E5763; }
+    *{ box-sizing:border-box; }
+    html,body{ margin:0; padding:0; background:var(--bg); }
+    body{ font-family:Arial,Helvetica,sans-serif; min-height:100vh; display:flex;
+          align-items:center; justify-content:center; padding:24px; }
+    .card{ width:100%; max-width:440px; background:var(--card); border:1px solid var(--border);
+           border-radius:16px; padding:38px 28px; text-align:center; }
+    .brand{ font-size:26px; font-weight:800; letter-spacing:1px; color:var(--accent); margin:0 0 14px; }
+    .check{ font-size:40px; line-height:1; margin:6px 0 10px; }
+    h1{ font-size:21px; font-weight:700; color:var(--text); margin:6px 0 0; }
+    p.sub{ font-size:14px; line-height:22px; color:var(--text2); margin:12px 0 22px; }
+    a.btn{ display:inline-block; padding:14px 30px; border-radius:11px; background:var(--accent);
+           color:var(--ink); font-size:15px; font-weight:700; text-decoration:none; }
+    .hint{ font-size:12px; color:var(--text3); margin-top:18px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="brand">BLIPPER</div>
+    <div class="check">✓</div>
+    <h1>E-Mail bestätigt</h1>
+    <p class="sub">Dein Konto ist aktiviert. Öffne die Blipper-App und melde dich an — los geht's.</p>
+    <a class="btn" href="rideout://confirmed">Blipper öffnen</a>
+    <div class="hint">© Blipper</div>
+  </div>
+  <script>
+    // Versuch, die App automatisch zu öffnen (greift auf dem Handy; auf Desktop bleibt der Button).
+    setTimeout(function(){ try { window.location.href = "rideout://confirmed"; } catch (e) {} }, 600);
+  </script>
+</body>
+</html>

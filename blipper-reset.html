@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<!--
+  Blipper — Passwort-Reset-Seite (Link-Flow).
+  Hosten (z. B. neben datenschutz.html) und die URL als redirectTo in der App
+  (PASSWORD_RESET_REDIRECT in app/auth.tsx) UND in Supabase → Authentication →
+  URL Configuration → Redirect URLs eintragen.
+  Voraussetzung: Supabase-Projekt im IMPLICIT flow (Default; App setzt kein PKCE).
+-->
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="robots" content="noindex" />
+  <title>Blipper — Neues Passwort</title>
+  <style>
+    :root{ --bg:#080A0D; --card:#0E1116; --border:#262C34; --accent:#FF5E1A;
+           --ink:#140800; --text:#EAF0F6; --text2:#8893A1; --text3:#4E5763;
+           --danger:#FF5A4D; --ok:#37D399; }
+    *{ box-sizing:border-box; }
+    html,body{ margin:0; padding:0; background:var(--bg); }
+    body{ font-family:Arial,Helvetica,sans-serif; min-height:100vh; display:flex;
+          align-items:center; justify-content:center; padding:24px; }
+    .card{ width:100%; max-width:440px; background:var(--card); border:1px solid var(--border);
+           border-radius:16px; padding:34px 28px; }
+    .brand{ text-align:center; font-size:26px; font-weight:800; letter-spacing:1px;
+            color:var(--accent); margin:0 0 6px; }
+    h1{ text-align:center; font-size:21px; font-weight:700; color:var(--text); margin:8px 0 0; }
+    p.sub{ text-align:center; font-size:14px; line-height:22px; color:var(--text2); margin:12px 0 22px; }
+    label{ display:block; font-size:12px; color:var(--text2); margin:0 0 6px; }
+    input{ width:100%; padding:13px 14px; margin-bottom:14px; border-radius:11px;
+           border:1px solid var(--border); background:#0A0D11; color:var(--text);
+           font-size:15px; outline:none; }
+    input:focus{ border-color:var(--accent); }
+    button{ width:100%; padding:14px; border:0; border-radius:11px; background:var(--accent);
+            color:var(--ink); font-size:15px; font-weight:700; cursor:pointer; }
+    button:disabled{ opacity:.5; cursor:default; }
+    .msg{ font-size:13px; line-height:20px; margin:4px 0 14px; min-height:18px; }
+    .msg.err{ color:var(--danger); }
+    .msg.ok{ color:var(--ok); }
+    .hint{ text-align:center; font-size:12px; color:var(--text3); margin-top:18px; }
+    .hidden{ display:none; }
+    .center{ text-align:center; }
+    .openapp{ display:inline-block; margin-top:14px; color:var(--accent);
+              text-decoration:underline; font-size:14px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="brand">BLIPPER</div>
+
+    <!-- Zustand: Formular -->
+    <div id="formView">
+      <h1>Neues Passwort</h1>
+      <p class="sub">Wähle ein neues Passwort für dein Blipper-Konto.</p>
+      <form id="resetForm" autocomplete="off">
+        <label for="pw">Neues Passwort</label>
+        <input id="pw" type="password" placeholder="Mindestens 6 Zeichen" minlength="6" required />
+        <label for="pw2">Passwort wiederholen</label>
+        <input id="pw2" type="password" placeholder="Nochmal eingeben" minlength="6" required />
+        <div id="msg" class="msg"></div>
+        <button id="submitBtn" type="submit">Passwort ändern</button>
+      </form>
+    </div>
+
+    <!-- Zustand: Erfolg -->
+    <div id="okView" class="hidden center">
+      <h1>Passwort geändert ✓</h1>
+      <p class="sub">Öffne die Blipper-App und melde dich mit deinem neuen Passwort an.</p>
+      <a class="openapp" href="rideout://login">Blipper öffnen</a>
+    </div>
+
+    <!-- Zustand: ungültiger/abgelaufener Link -->
+    <div id="badView" class="hidden center">
+      <h1>Link ungültig</h1>
+      <p class="sub">Dieser Reset-Link ist abgelaufen oder wurde schon benutzt.
+        Fordere in der Blipper-App unter „Passwort vergessen?" einen neuen an.</p>
+      <a class="openapp" href="rideout://login">Blipper öffnen</a>
+    </div>
+
+    <div class="hint">© Blipper</div>
+  </div>
+
+  <script type="module">
+    import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+    // Öffentliche Werte (anon key ist bewusst public — wie in der App).
+    const SUPABASE_URL = "https://safqeoepzoozkjukztwq.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNhZnFlb2Vwem9vemtqdWt6dHdxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyNzk2MjQsImV4cCI6MjA5Mjg1NTYyNH0.A-riihkt2ljO-V1DDLihgoEr7NM7bFWXNdRtSKvfk28";
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: { detectSessionInUrl: true, flowType: "implicit", persistSession: false },
+    });
+
+    const $ = (id) => document.getElementById(id);
+    const show = (which) => {
+      $("formView").classList.toggle("hidden", which !== "form");
+      $("okView").classList.toggle("hidden", which !== "ok");
+      $("badView").classList.toggle("hidden", which !== "bad");
+    };
+
+    let hasRecovery = false;
+    // supabase-js liest die Recovery-Session aus dem URL-Fragment (#access_token…&type=recovery)
+    supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "PASSWORD_RECOVERY" || (session && event === "SIGNED_IN")) hasRecovery = true;
+    });
+
+    // Fallback: nach kurzem Moment prüfen, ob eine Session da ist.
+    window.addEventListener("load", async () => {
+      await new Promise((r) => setTimeout(r, 350));
+      const { data } = await supabase.auth.getSession();
+      if (data && data.session) hasRecovery = true;
+      if (!hasRecovery) show("bad"); else show("form");
+    });
+
+    $("resetForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const pw = $("pw").value, pw2 = $("pw2").value, msg = $("msg");
+      msg.className = "msg";
+      if (pw.length < 6) { msg.classList.add("err"); msg.textContent = "Mindestens 6 Zeichen."; return; }
+      if (pw !== pw2) { msg.classList.add("err"); msg.textContent = "Die Passwörter stimmen nicht überein."; return; }
+      $("submitBtn").disabled = true;
+      msg.textContent = "Wird gespeichert…";
+      const { error } = await supabase.auth.updateUser({ password: pw });
+      if (error) {
+        $("submitBtn").disabled = false;
+        msg.classList.add("err");
+        msg.textContent = /weak|at least|should be|characters/i.test(error.message || "")
+          ? "Passwort erfüllt die Anforderungen nicht."
+          : "Konnte das Passwort nicht ändern. Link evtl. abgelaufen — fordere einen neuen an.";
+        return;
+      }
+      await supabase.auth.signOut().catch(() => {});
+      show("ok");
+    });
+  </script>
+</body>
+</html>
